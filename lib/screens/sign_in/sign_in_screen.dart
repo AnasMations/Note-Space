@@ -7,6 +7,7 @@ import 'package:flut_fire_training/style/custom_style.dart';
 
 import 'package:flutter/material.dart';
 
+/****asnasoicnaoscnoasinc */
 class SignInScreenManual extends StatelessWidget {
   const SignInScreenManual({
     Key? key,
