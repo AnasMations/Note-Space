@@ -1,13 +1,12 @@
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
 class CustomStyle {
   static List<Color> colorPalette = [
-    Color.fromARGB(255, 117, 79, 68),
-    Color.fromARGB(255, 247, 130, 84),
-    Color.fromARGB(255, 242, 193, 78),
-    Color.fromARGB(255, 151, 171, 177),
-    Color.fromARGB(255, 255, 255, 255),
+    const Color.fromARGB(255, 117, 79, 68),
+    const Color.fromARGB(255, 247, 130, 84),
+    const Color.fromARGB(255, 242, 193, 78),
+    const Color.fromARGB(255, 151, 171, 177),
+    const Color.fromARGB(255, 255, 255, 255),
     Colors.black54
   ];
 
@@ -35,4 +34,22 @@ class CustomStyle {
                   MaterialStateProperty.all<Color>(CustomStyle.colorPalette[4]),
               backgroundColor: MaterialStateProperty.all<Color>(
                   CustomStyle.colorPalette[1]))));
+  static BoxDecoration customBoxDecoration(bool tophalf, bool bottomHalf) {
+    if (tophalf && !bottomHalf) {
+      return BoxDecoration(
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+          color: CustomStyle.colorPalette[2]);
+    } else if (bottomHalf && !tophalf) {
+      return BoxDecoration(
+          borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(40)),
+          color: CustomStyle.colorPalette[2]);
+    } else {
+      return BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(40)),
+          color: CustomStyle.colorPalette[2]);
+    }
+  }
 }

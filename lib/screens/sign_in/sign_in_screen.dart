@@ -2,12 +2,12 @@ import 'dart:ffi';
 
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flut_fire_training/models/user_model.dart';
+import 'package:flut_fire_training/screens/update_profile/update_profile.dart';
 import 'package:flut_fire_training/services/firebase-services.dart';
 import 'package:flut_fire_training/style/custom_style.dart';
 
 import 'package:flutter/material.dart';
 
-/****asnasoicnaoscnoasinc */
 class SignInScreenManual extends StatelessWidget {
   const SignInScreenManual({
     Key? key,
@@ -83,85 +83,6 @@ class CustomSignInScreen extends StatelessWidget {
               }
             }),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class UpdateProfile extends StatelessWidget {
-  const UpdateProfile({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Center(
-                child: Text(
-              'Update profile',
-              style: TextStyle(
-                  color: CustomStyle.colorPalette[2],
-                  fontSize: CustomStyle.massiveTitleSize,
-                  fontWeight: FontWeight.bold),
-            )),
-          ),
-          Expanded(
-              flex: 8,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40)),
-                    color: CustomStyle.colorPalette[2]),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: CustomStyle.colorPalette[1],
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 6,
-                        child: Form(
-                            key: GlobalKey<FormState>(),
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: TextFormField(
-                                      decoration:
-                                          InputDecoration(labelText: 'Name'),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter some text';
-                                        }
-                                        return value;
-                                      },
-                                    ),
-                                  )
-                                ])),
-                      )
-                    ],
-                  ),
-                ),
-              ))
         ],
       ),
     );
