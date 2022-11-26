@@ -1,0 +1,28 @@
+^C:\USERS\AHMED\FLUT_FIRE_TRAINING\BUILD\WINDOWS\CMAKEFILES\4691C60CC164B527190BA6FF79CA0C73\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=C:\flutter PROJECT_DIR=C:\Users\ahmed\flut_fire_training FLUTTER_ROOT=C:\flutter FLUTTER_EPHEMERAL_DIR=C:\Users\ahmed\flut_fire_training\windows\flutter\ephemeral PROJECT_DIR=C:\Users\ahmed\flut_fire_training FLUTTER_TARGET=C:\Users\ahmed\flut_fire_training\lib\main.dart DART_DEFINES=RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ== DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=C:\Users\ahmed\flut_fire_training\.dart_tool\package_config.json C:/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\AHMED\FLUT_FIRE_TRAINING\BUILD\WINDOWS\CMAKEFILES\ED9B12F01A3ED8F21A0B1E1E0E5DE9BD\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\AHMED\FLUT_FIRE_TRAINING\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/ahmed/flut_fire_training/windows -BC:/Users/ahmed/flut_fire_training/build/windows --check-stamp-file C:/Users/ahmed/flut_fire_training/build/windows/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

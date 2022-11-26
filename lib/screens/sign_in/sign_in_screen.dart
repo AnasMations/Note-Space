@@ -46,7 +46,8 @@ class CustomSignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: CustomStyle.signInUpCustomTheme,
+      data: Theme.of(context)
+          .copyWith(scaffoldBackgroundColor: CustomStyle.colorPalette[2]),
       child: SignInScreen(
         providers: [EmailAuthProvider()],
         showAuthActionSwitch: true,
@@ -57,7 +58,8 @@ class CustomSignInScreen extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: ((context) => Theme(
-                      data: CustomStyle.signInUpCustomTheme,
+                      data: Theme.of(context).copyWith(
+                          scaffoldBackgroundColor: CustomStyle.colorPalette[2]),
                       child: const ForgotPasswordScreen())),
                 ),
               );
@@ -65,17 +67,16 @@ class CustomSignInScreen extends StatelessWidget {
           ),
           //sign in action
           AuthStateChangeAction<SignedIn>(
+            //if user is authenticated but doesn't exist in firestore database then he hasn't finished setting up his profile
             ((context, state) async {
               if (await FirestoreServices.fetchUser(state.user!.uid) != null) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: ((context) => Theme(
-                        data: CustomStyle.signInUpCustomTheme,
-                        child: const ProfileScreen())),
+                    builder: ((context) => const ProfileScreen()),
                   ),
                 );
               } else {
-                Navigator.of(context).pushReplacement(
+                Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: ((context) => UpdateProfile()),
                   ),

@@ -1,0 +1,14 @@
+C:/Users/ahmed/flut_fire_training/build/windows/CMakeFiles/INSTALL.dir
+C:/Users/ahmed/flut_fire_training/build/windows/CMakeFiles/ALL_BUILD.dir
+C:/Users/ahmed/flut_fire_training/build/windows/CMakeFiles/ZERO_CHECK.dir
+C:/Users/ahmed/flut_fire_training/build/windows/flutter/CMakeFiles/flutter_wrapper_plugin.dir
+C:/Users/ahmed/flut_fire_training/build/windows/flutter/CMakeFiles/flutter_wrapper_app.dir
+C:/Users/ahmed/flut_fire_training/build/windows/flutter/CMakeFiles/flutter_assemble.dir
+C:/Users/ahmed/flut_fire_training/build/windows/flutter/CMakeFiles/INSTALL.dir
+C:/Users/ahmed/flut_fire_training/build/windows/runner/CMakeFiles/flut_fire_training.dir
+C:/Users/ahmed/flut_fire_training/build/windows/runner/CMakeFiles/INSTALL.dir
+C:/Users/ahmed/flut_fire_training/build/windows/runner/CMakeFiles/ALL_BUILD.dir
+C:/Users/ahmed/flut_fire_training/build/windows/plugins/desktop_webview_auth/CMakeFiles/desktop_webview_auth_DEPENDENCIES_DOWNLOAD.dir
+C:/Users/ahmed/flut_fire_training/build/windows/plugins/desktop_webview_auth/CMakeFiles/desktop_webview_auth_plugin.dir
+C:/Users/ahmed/flut_fire_training/build/windows/plugins/desktop_webview_auth/CMakeFiles/INSTALL.dir
+C:/Users/ahmed/flut_fire_training/build/windows/plugins/desktop_webview_auth/CMakeFiles/ALL_BUILD.dir

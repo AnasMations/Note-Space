@@ -29,3 +29,5 @@ class FirestoreServices {
       return null;
   }
 }
+
+class StorageServices {}

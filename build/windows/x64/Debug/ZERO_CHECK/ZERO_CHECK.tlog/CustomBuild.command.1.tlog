@@ -1,0 +1,10 @@
+^C:\USERS\AHMED\FLUT_FIRE_TRAINING\BUILD\WINDOWS\CMAKEFILES\B5CDA44DA7E4EFAD376B1C8C5F0D1008\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/ahmed/flut_fire_training/windows -BC:/Users/ahmed/flut_fire_training/build/windows --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/ahmed/flut_fire_training/build/windows/flut_fire_training.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
