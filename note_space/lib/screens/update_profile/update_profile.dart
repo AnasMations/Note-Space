@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:flut_fire_training/models/user_model.dart';
-import 'package:flut_fire_training/services/firebase-services.dart';
-import 'package:flut_fire_training/style/custom_style.dart';
+import 'package:note_space/models/user_model.dart';
+import 'package:note_space/services/firebase-services.dart';
+import 'package:note_space/style/custom_style.dart';
 import 'package:flutter/material.dart';
 
 class UpdateProfile extends StatelessWidget {
