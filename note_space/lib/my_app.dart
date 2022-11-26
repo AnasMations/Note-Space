@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         outlinedButtonTheme: CustomStyle.customOutlinedButtonTheme,
       ),
       title: 'we learning',
-      home: UpdateProfile(currentUser: User(name: 'ahmed')),
+      home: SignInScreenManual(),
     );
   }
 }
