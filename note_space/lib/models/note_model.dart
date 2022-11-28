@@ -4,7 +4,7 @@ class Note {
   //attributes
   String? uID;
   String? name;
-  int? rating;
+  float? rating;
   String? description;
   String? fileUrl;
   String? coverImageUrl;
