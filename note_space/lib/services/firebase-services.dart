@@ -1,11 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/note_model.dart';
 import '../models/user_model.dart';
 
 class FirestoreServices {
   //attributes
-  static final _db = FirebaseFirestore.instance;
   static final _usersCollection =
       FirebaseFirestore.instance.collection('users');
+  static final _notesCollection =
+      FirebaseFirestore.instance.collection('notes');
+  static final _categoriesCollection =
+      FirebaseFirestore.instance.collection('categories');
+
+//**********************     users             ********************** */
 
 //creates a user , or if the user already exists, update their information
 //parameters : user : a user that you create after succesfully collecting the data you need in the update profile screen
@@ -66,6 +72,35 @@ class FirestoreServices {
       userslist.add(User.fromFirestore(doc));
     }
     return userslist;
+  }
+
+  //******************************************************************* */
+
+  //**********************        notes ******************************** */
+  //creates a note on our db and returns its randomly generated uid incase you want to fetch it again and do sth with it
+  static Future<String?> createNote(Note note) async {
+    final newNoteDoc = _notesCollection.doc();
+    note.uID = newNoteDoc.id;
+    await newNoteDoc.set(note.toFirestore());
+    return note.uID;
+  }
+
+  //updates an existing note , we don't check if this note already exists because how on earth would the user
+  //trigger a note editing screen without first selecting an existing note
+  static Future updateExistingNote(Note note) async {
+    final noteDoc = _notesCollection.doc(note.uID);
+    await noteDoc.set(note.toFirestore());
+  }
+
+  //fetches a note by its uID , if the note doesn't exist , returns null
+  static Future<Note?> fetchNote(String? noteUID) async {
+    final noteDoc =
+        await _notesCollection.doc(noteUID).get(); //this is a doc snapshot
+    if (noteDoc.exists) {
+      return Note.fromFirestore(noteDoc);
+    } else {
+      return null;
+    }
   }
 }
 
