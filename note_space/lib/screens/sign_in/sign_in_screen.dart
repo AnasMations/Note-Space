@@ -1,11 +1,6 @@
-import 'dart:ffi';
-
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:note_space/models/user_model.dart';
-import 'package:note_space/screens/update_profile/update_profile.dart';
-import 'package:note_space/services/firebase-services.dart';
-import 'package:note_space/style/custom_style.dart';
-
+import 'package:flut_fire_training/services/firebase-services.dart';
+import 'package:flut_fire_training/style/custom_style.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreenManual extends StatelessWidget {
@@ -67,18 +62,24 @@ class CustomSignInScreen extends StatelessWidget {
           ),
           //sign in action
           AuthStateChangeAction<SignedIn>(
+            //when a user signs up for the first time , he is authenticated in firebase auth , but he still doesn't exist in our cloud firestore database
+            //the user only exists in firebase cloudfirestore if he signs up then finishes updating his profile information
             //if user is authenticated but doesn't exist in firestore database then he hasn't finished setting up his profile
+            //so we will always push these kinds of users to update profile screen
             ((context, state) async {
-              if (await FirestoreServices.fetchUser(state.user!.uid) != null) {
+              if (await FirestoreServices.fetchUser(state.user!.uid) == null) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: ((context) => const ProfileScreen()),
+                    //put update profile screen here
+                    builder: ((context) => Scaffold()),
                   ),
                 );
               } else {
+                //else if user is authenticated and he does exist in firestore database, then go to home screen normally
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: ((context) => UpdateProfile()),
+                    //put home page here
+                    builder: ((context) => Scaffold()),
                   ),
                 );
               }
