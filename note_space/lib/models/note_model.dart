@@ -2,15 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Note {
   //attributes
+
+  //randomly generated and assigned to note upon creation
+  //don't assign a value to it when creating the note , firebase services will assign the value
   String? uID;
+
+  //you will assign values to these based on user input
   String? name;
-  int? rating;
   String? description;
+  String? category;
+  //these two will be returned by firebase storage services as user picks the file and image
   String? fileUrl;
   String? coverImageUrl;
+
+  //you will assign initial values to these
+  int? rating;
   Timestamp? uploadDate;
   String? uploaderReference;
-  String? category;
 
   //+map of comments (commenterRefernce : comment itself) , list of tags
 
@@ -30,7 +38,6 @@ class Note {
   //read and write from firestore
   factory Note.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options,
   ) {
     final data = snapshot.data();
     return Note(
