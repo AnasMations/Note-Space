@@ -140,13 +140,12 @@ class _UpdateUserInfoFormState extends State<UpdateUserInfoForm> {
                         );
                         User currentUser = User(
                             name: userName,
-                            uID: await auth
-                                .FirebaseAuth.instance.currentUser!.uid,
+                            uID: auth.FirebaseAuth.instance.currentUser!.uid,
                             university: university,
                             coverImageUrl: "",
                             totalRating: 0,
                             userDescription: userDescription);
-                        await FirestoreServices.createUser(currentUser);
+                        await FirestoreServices.createOrUpdateUser(currentUser);
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: ((context) => Scaffold())));
                       }

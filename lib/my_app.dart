@@ -1,6 +1,6 @@
 import 'package:flut_fire_training/models/user_model.dart';
-import 'package:flut_fire_training/screens/sign_in/sign_in_screen.dart';
-import 'package:flut_fire_training/screens/update_profile/update_profile.dart';
+
+import 'package:flut_fire_training/services/firebase-services.dart';
 import 'package:flut_fire_training/style/custom_style.dart';
 
 import 'package:flutter/material.dart';
@@ -20,7 +20,21 @@ class MyApp extends StatelessWidget {
         outlinedButtonTheme: CustomStyle.customOutlinedButtonTheme,
       ),
       title: 'we learning',
-      home: SignInScreenManual(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Test file picker'),
+        ),
+        body: Center(
+          child: OutlinedButton(
+            child: Text('pick a photo'),
+            onPressed: () async {
+              String url =
+                  await StorageServices.uploadUserPhoto(User(uID: '123'));
+              print(url);
+            },
+          ),
+        ),
+      ),
     );
   }
 }
