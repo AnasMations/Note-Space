@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import '../models/note_model.dart';
 import '../models/user_model.dart';
 
@@ -15,10 +20,17 @@ class FirestoreServices {
 
 //creates a user , or if the user already exists, update their information
 //parameters : user : a user that you create after succesfully collecting the data you need in the update profile screen
-  static Future createOrUpdateUser(User user) async {
+  static Future createUser(User user) async {
     //this generates a new empty doc in users collection and gives it the user id to set as the document id
     final newUserDoc = _usersCollection.doc(user.uID); //this is a doc reference
     await newUserDoc.set(user.toFirestore());
+  }
+
+  static Future updateUser(User user) async {
+    //this generates a new empty doc in users collection and gives it the user id to set as the document id
+    final newUserDoc = _usersCollection.doc(user.uID); //this is a doc reference
+    await newUserDoc.set(user.toFirestore());
+    //add check here somehow
   }
 
   //if this function finds the user your are looking for it returns it, else it will return null
@@ -27,7 +39,7 @@ class FirestoreServices {
   you can fetch it anywhere in the project with 
   FirebaseAuth.instance.currentUser!.uid
   */
-  static Future<User?> fetchUser(String? uID) async {
+  static Future<User?> fetchUser(String uID) async {
     final userDoc =
         await _usersCollection.doc(uID).get(); //this is a doc snapshot
     if (userDoc.exists) {
@@ -48,25 +60,29 @@ class FirestoreServices {
   //I.E lets say you fetched users 1 2 3 from the db
   //now you want to fetch more users but don't want to fetch 1 2 3 again
   //pass User number 3 as a paramter to this function and it will start fetching from user 4
-  static Future<List<User?>> fetchAllUsersByrating(int number,
+  static Future<List<User>> fetchAllUsersByrating(int number,
       {User? lastUser}) async {
     final userDocs;
-    List<User?> userslist = [];
+    List<User> userslist = [];
     if (lastUser != null) {
       final lastUserDoc = await _usersCollection.doc(lastUser.uID).get();
       if (lastUserDoc.exists) {
         userDocs = await _usersCollection
-            .orderBy('totalRating')
+            .orderBy('totalRating', descending: true)
             .startAfterDocument(lastUserDoc)
             .limit(number)
             .get();
       } else {
-        userDocs =
-            await _usersCollection.orderBy('totalRating').limit(number).get();
+        userDocs = await _usersCollection
+            .orderBy('totalRating', descending: true)
+            .limit(number)
+            .get();
       }
     } else {
-      userDocs =
-          await _usersCollection.orderBy('totalRating').limit(number).get();
+      userDocs = await _usersCollection
+          .orderBy('totalRating', descending: true)
+          .limit(number)
+          .get();
     }
     for (final doc in userDocs.docs) {
       userslist.add(User.fromFirestore(doc));
@@ -77,12 +93,15 @@ class FirestoreServices {
   //******************************************************************* */
 
   //**********************        notes ******************************** */
-  //creates a note on our db and returns its randomly generated uid incase you want to fetch it again and do sth with it
-  static Future<String?> createNote(Note note) async {
+  //get
+  static String generateNoteUID() {
     final newNoteDoc = _notesCollection.doc();
-    note.uID = newNoteDoc.id;
+    return newNoteDoc.id;
+  }
+
+  static Future createNote(Note note) async {
+    final newNoteDoc = _notesCollection.doc(note.uID);
     await newNoteDoc.set(note.toFirestore());
-    return note.uID;
   }
 
   //updates an existing note , we don't check if this note already exists because how on earth would the user
@@ -104,4 +123,74 @@ class FirestoreServices {
   }
 }
 
-class StorageServices {}
+class StorageServices {
+  //attributes
+
+  static final _usersBucketRef = FirebaseStorage.instance.ref().child('users');
+  static final _notesBucketRef = FirebaseStorage.instance.ref().child('notes');
+
+  //upload a file , if its a user photo then pass userUID , if its a note file or note cover pass the note id
+  static Future<String?> uploadToStorage(
+      String iD, FilePickerResult? result, int operationKind) async {
+    if (result == null) return null;
+    File file = File(result.files.first.path!);
+
+    //upload file
+    if (operationKind == 0) {
+      //uploading user cover photo
+      UploadTask task =
+          _usersBucketRef.child(iD).child('ProfilePic').putFile(file);
+      final completionResult = await task.whenComplete(() => null);
+      if (completionResult.state == TaskState.success) {
+        return await _usersBucketRef
+            .child(iD)
+            .child('ProfilePic')
+            .getDownloadURL();
+      } else {
+        return null;
+      }
+    } else if (operationKind == 1) {
+      //uploading note cover
+      UploadTask task =
+          _notesBucketRef.child(iD).child('NotePic').putFile(file);
+      final completionResult = await task.whenComplete(() => null);
+      if (completionResult.state == TaskState.success) {
+        return await _notesBucketRef
+            .child(iD)
+            .child('NotePic')
+            .getDownloadURL();
+      } else {
+        return null;
+      }
+    } else if (operationKind == 2) {
+      //uploading note file
+      UploadTask task =
+          _notesBucketRef.child(iD).child('NoteFile').putFile(file);
+      final completionResult = await task.whenComplete(() => null);
+      if (completionResult.state == TaskState.success) {
+        return await _notesBucketRef
+            .child(iD)
+            .child('NoteFile')
+            .getDownloadURL();
+      } else {
+        return null;
+      }
+    }
+  }
+
+  static Future<FilePickerResult?> pickAPhoto() async {
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+
+    return result;
+  }
+
+  static Future<FilePickerResult?> pickANoteFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx'],
+    );
+
+    return result;
+  }
+}

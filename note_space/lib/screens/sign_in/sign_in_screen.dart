@@ -1,7 +1,12 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:flut_fire_training/providers/user_provider.dart';
 import 'package:flut_fire_training/services/firebase-services.dart';
 import 'package:flut_fire_training/style/custom_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/user_model.dart';
+import '../common_widgets/app_title.dart';
 
 class SignInScreenManual extends StatelessWidget {
   const SignInScreenManual({
@@ -19,7 +24,7 @@ class SignInScreenManual extends StatelessWidget {
           //upper white area of log in screen and title
           Expanded(
             flex: 3,
-            child: SignInScreenTitle(),
+            child: AppTitle(),
           ),
 
           //orange area with log in form
@@ -67,7 +72,10 @@ class CustomSignInScreen extends StatelessWidget {
             //if user is authenticated but doesn't exist in firestore database then he hasn't finished setting up his profile
             //so we will always push these kinds of users to update profile screen
             ((context, state) async {
-              if (await FirestoreServices.fetchUser(state.user!.uid) == null) {
+              //users have to finish setting up their profile in order to use the app
+              User? fetchedUser =
+                  await FirestoreServices.fetchUser(state.user!.uid);
+              if (fetchedUser == null) {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     //put update profile screen here
@@ -76,6 +84,8 @@ class CustomSignInScreen extends StatelessWidget {
                 );
               } else {
                 //else if user is authenticated and he does exist in firestore database, then go to home screen normally
+                Provider.of<UserProvider>(context, listen: false)
+                    .setMainUser(fetchedUser);
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     //put home page here
@@ -85,38 +95,6 @@ class CustomSignInScreen extends StatelessWidget {
               }
             }),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class SignInScreenTitle extends StatelessWidget {
-  const SignInScreenTitle({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Note Space',
-            style: TextStyle(
-                color: CustomStyle.colorPalette[2],
-                fontSize: CustomStyle.massiveTitleSize,
-                fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'All the notes you need',
-            style: TextStyle(
-              color: CustomStyle.colorPalette[5],
-              fontSize: CustomStyle.averageSize,
-            ),
-          )
         ],
       ),
     );
