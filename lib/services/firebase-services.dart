@@ -1,8 +1,10 @@
 import 'dart:io';
-
+import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:flutter/material.dart';
 import '../models/note_model.dart';
 import '../models/user_model.dart';
 
@@ -12,17 +14,24 @@ class FirestoreServices {
       FirebaseFirestore.instance.collection('users');
   static final _notesCollection =
       FirebaseFirestore.instance.collection('notes');
-  static final _categoriesCollection =
-      FirebaseFirestore.instance.collection('categories');
+  static final _categoriesDoc =
+      FirebaseFirestore.instance.collection('search').doc('categories');
 
 //**********************     users             ********************** */
 
 //creates a user , or if the user already exists, update their information
 //parameters : user : a user that you create after succesfully collecting the data you need in the update profile screen
-  static Future createOrUpdateUser(User user) async {
+  static Future createUser(User user) async {
     //this generates a new empty doc in users collection and gives it the user id to set as the document id
     final newUserDoc = _usersCollection.doc(user.uID); //this is a doc reference
     await newUserDoc.set(user.toFirestore());
+  }
+
+  static Future updateUser(User user) async {
+    //this generates a new empty doc in users collection and gives it the user id to set as the document id
+    final newUserDoc = _usersCollection.doc(user.uID); //this is a doc reference
+    await newUserDoc.set(user.toFirestore());
+    //add check here somehow
   }
 
   //if this function finds the user your are looking for it returns it, else it will return null
@@ -31,7 +40,7 @@ class FirestoreServices {
   you can fetch it anywhere in the project with 
   FirebaseAuth.instance.currentUser!.uid
   */
-  static Future<User?> fetchUser(String? uID) async {
+  static Future<User?> fetchUser(String uID) async {
     final userDoc =
         await _usersCollection.doc(uID).get(); //this is a doc snapshot
     if (userDoc.exists) {
@@ -52,25 +61,29 @@ class FirestoreServices {
   //I.E lets say you fetched users 1 2 3 from the db
   //now you want to fetch more users but don't want to fetch 1 2 3 again
   //pass User number 3 as a paramter to this function and it will start fetching from user 4
-  static Future<List<User?>> fetchAllUsersByrating(int number,
+  static Future<List<User>> fetchAllUsersByrating(int number,
       {User? lastUser}) async {
     final userDocs;
-    List<User?> userslist = [];
+    List<User> userslist = [];
     if (lastUser != null) {
       final lastUserDoc = await _usersCollection.doc(lastUser.uID).get();
       if (lastUserDoc.exists) {
         userDocs = await _usersCollection
-            .orderBy('totalRating')
+            .orderBy('totalRating', descending: true)
             .startAfterDocument(lastUserDoc)
             .limit(number)
             .get();
       } else {
-        userDocs =
-            await _usersCollection.orderBy('totalRating').limit(number).get();
+        userDocs = await _usersCollection
+            .orderBy('totalRating', descending: true)
+            .limit(number)
+            .get();
       }
     } else {
-      userDocs =
-          await _usersCollection.orderBy('totalRating').limit(number).get();
+      userDocs = await _usersCollection
+          .orderBy('totalRating', descending: true)
+          .limit(number)
+          .get();
     }
     for (final doc in userDocs.docs) {
       userslist.add(User.fromFirestore(doc));
@@ -80,13 +93,24 @@ class FirestoreServices {
 
   //******************************************************************* */
 
+  //*********************categories */
+
+  static Future<List<String>?> fetchCategories() async {
+    final catDoc = await _categoriesDoc.get();
+    final cats = List<String>.from(catDoc.data()?['allCategories'] as List);
+    return cats;
+  }
+
   //**********************        notes ******************************** */
-  //creates a note on our db and returns its randomly generated uid incase you want to fetch it again and do sth with it
-  static Future<String?> createNote(Note note) async {
+  //get
+  static String generateNoteUID() {
     final newNoteDoc = _notesCollection.doc();
-    note.uID = newNoteDoc.id;
+    return newNoteDoc.id;
+  }
+
+  static Future createNote(Note note) async {
+    final newNoteDoc = _notesCollection.doc(note.uID);
     await newNoteDoc.set(note.toFirestore());
-    return note.uID;
   }
 
   //updates an existing note , we don't check if this note already exists because how on earth would the user
@@ -94,6 +118,46 @@ class FirestoreServices {
   static Future updateExistingNote(Note note) async {
     final noteDoc = _notesCollection.doc(note.uID);
     await noteDoc.set(note.toFirestore());
+  }
+
+  static interactWithNote(Note note, String targetUserUID,
+      {int? ratingModification,
+      Map<String, dynamic>? comment,
+      bool removeExistingComment = false,
+      String? commenterIDToRemoveFrom,
+      int? downloadModification}) async {
+    User? targetUser = await fetchUser(targetUserUID);
+    if (targetUser == null) return;
+    if (ratingModification != null) {
+      note.rating += ratingModification;
+      targetUser.totalRating += ratingModification;
+      await updateUser(targetUser);
+    }
+
+    if (comment != null && !removeExistingComment) {
+      //this is a new comment
+      if (note.comments.firstWhere(
+              (element) => element['commenterUid'] == comment['commenterUid'],
+              orElse: () => "") ==
+          "") {
+        note.comments.add(comment);
+      } else {
+        note.comments.firstWhere((element) =>
+                element['commenterUid'] == comment['commenterUid'])['comment'] =
+            comment['comment'];
+      }
+    }
+    if (removeExistingComment && commenterIDToRemoveFrom != null) {
+      note.comments.remove(note.comments.firstWhere(
+          (element) => element['commenterUid'] == commenterIDToRemoveFrom));
+    }
+    if (downloadModification != null) {
+      note.downloadCount += downloadModification;
+      targetUser.downloadCount += downloadModification;
+      await updateUser(targetUser);
+    }
+
+    await updateExistingNote(note);
   }
 
   //fetches a note by its uID , if the note doesn't exist , returns null
@@ -106,28 +170,201 @@ class FirestoreServices {
       return null;
     }
   }
+
+  static Future<List<Note>> fetchAllNotesUnderCategoryByrating(
+      int number, String category,
+      {Note? lastNote}) async {
+    if (category == "") category = 'General';
+    final noteDocs;
+    List<Note> notelist = [];
+    if (lastNote != null) {
+      final lastNoteDoc = await _notesCollection.doc(lastNote.uID).get();
+      if (lastNoteDoc.exists) {
+        noteDocs = await _notesCollection
+            .where('category', isEqualTo: category)
+            .orderBy('rating', descending: true)
+            .startAfterDocument(lastNoteDoc)
+            .limit(number)
+            .get();
+      } else {
+        noteDocs = await _notesCollection
+            .where('category', isEqualTo: category)
+            .orderBy('rating', descending: true)
+            .limit(number)
+            .get();
+      }
+    } else {
+      noteDocs = await _notesCollection
+          .where('category', isEqualTo: category)
+          .orderBy('rating', descending: true)
+          .limit(number)
+          .get();
+    }
+    for (final doc in noteDocs.docs) {
+      notelist.add(Note.fromFirestore(doc));
+    }
+    return notelist;
+  }
+
+  static Future<List<Note>> fetchAllNotesInList(
+    List<String> references,
+  ) async {
+    QuerySnapshot<Map<String, dynamic>> noteDocs;
+    List<Note> notelist = [];
+    var referencesChunks = [];
+    if (references.isEmpty) return [];
+
+    referencesChunks = references.slices(10).toList();
+
+    for (var chunk in referencesChunks) {
+      noteDocs = await _notesCollection.where('uID', whereIn: chunk).get();
+      for (final doc in noteDocs.docs) {
+        notelist.add(Note.fromFirestore(doc));
+      }
+    }
+    return notelist;
+  }
+
+  static Future<List<Note>> searchForNoteUnderCategoryByrating(
+      String items, int number, String category,
+      {Note? lastNote}) async {
+    if (items == "") return [];
+    final noteDocs;
+    List<Note> notelist = [];
+    if (lastNote != null) {
+      final lastNoteDoc = await _notesCollection.doc(lastNote.uID).get();
+      if (lastNoteDoc.exists) {
+        noteDocs = await _notesCollection
+            .where('category', isEqualTo: category)
+            .where('nameParts', arrayContains: items)
+            .orderBy('rating', descending: true)
+            .startAfterDocument(lastNoteDoc)
+            .limit(number)
+            .get();
+      } else {
+        noteDocs = await _notesCollection
+            .where('category', isEqualTo: category)
+            .where('nameParts', arrayContains: items)
+            .orderBy('rating', descending: true)
+            .limit(number)
+            .get();
+      }
+    } else {
+      noteDocs = await _notesCollection
+          .where('category', isEqualTo: category)
+          .where('nameParts', arrayContains: items)
+          .orderBy('rating', descending: true)
+          .limit(number)
+          .get();
+    }
+    for (final doc in noteDocs.docs) {
+      notelist.add(Note.fromFirestore(doc));
+    }
+    return notelist;
+  }
 }
 
 class StorageServices {
   //attributes
-  static final _storageRef = FirebaseStorage.instance.ref();
+  static final storage = FirebaseStorage.instance;
+
   static final _usersBucketRef = FirebaseStorage.instance.ref().child('users');
   static final _notesBucketRef = FirebaseStorage.instance.ref().child('notes');
 
-  //upload a user profile photo , returns a url with the photo after it has been uploaded so you can load it
-  static Future<String> uploadUserPhoto(User user) async {
+  //upload a file , if its a user photo then pass userUID , if its a note file or note cover pass the note id
+  static Future<String?> uploadToStorage(BuildContext context, String iD,
+      FilePickerResult? result, int operationKind) async {
+    if (result == null) return null;
+    File file = File(result.files.first.path!);
+    bool status = true;
+    String? res;
+    //upload file
+    try {
+      if (operationKind == 0) {
+        //uploading user cover photo
+        final task =
+            _usersBucketRef.child(iD).child('ProfilePic').putFile(file);
+        task.snapshotEvents.listen((event) async {
+          if (event.state == TaskState.canceled ||
+              event.state == TaskState.error) status = false;
+          if (event.state == TaskState.running) {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    '${event.bytesTransferred / await file.length()} % completed')));
+          }
+        });
+        final value = await task.whenComplete(() => null);
+        if (value.state == TaskState.success && status) {
+          res = await _usersBucketRef
+              .child(iD)
+              .child('ProfilePic')
+              .getDownloadURL();
+        }
+        ;
+      } else if (operationKind == 1) {
+        //uploading note cover
+        final task = _notesBucketRef.child(iD).child('NotePic').putFile(file);
+        task.snapshotEvents.listen((event) async {
+          if (event.state == TaskState.canceled ||
+              event.state == TaskState.error) status = false;
+          if (event.state == TaskState.running) {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    '${event.bytesTransferred / await file.length()} % completed')));
+          }
+        });
+        final value = await task.whenComplete(() => null);
+        if (value.state == TaskState.success && status) {
+          res =
+              await _notesBucketRef.child(iD).child('NotePic').getDownloadURL();
+        }
+        ;
+      } else if (operationKind == 2) {
+        //uploading note file
+
+        final task = _notesBucketRef.child(iD).child('NoteFile').putFile(file);
+        task.snapshotEvents.listen((event) async {
+          if (event.state == TaskState.canceled ||
+              event.state == TaskState.error ||
+              event.state == TaskState.paused) status = false;
+          if (event.state == TaskState.running) {
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    '${event.bytesTransferred / await file.length()} % completed')));
+          }
+        });
+        final value = await task.whenComplete(() => null);
+        if (value.state == TaskState.success && status) {
+          res = await _notesBucketRef
+              .child(iD)
+              .child('NoteFile')
+              .getDownloadURL();
+        }
+        ;
+      }
+    } on Exception catch (e) {
+      print(e);
+      return res;
+    }
+    return res;
+  }
+
+  static Future<FilePickerResult?> pickAPhoto() async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(type: FileType.image);
 
-    if (result != null) {
-      File file = File(result.files.first.path!);
-      String fileName = result.files.first.name;
+    return result;
+  }
 
-      //upload file
-      await _usersBucketRef.child(user.uID!).child(fileName).putFile(file);
-      return _usersBucketRef.child(user.uID!).child(fileName).getDownloadURL();
-    } else {
-      return "Cancelled";
-    }
+  static Future<FilePickerResult?> pickANoteFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx'],
+    );
+
+    return result;
   }
 }

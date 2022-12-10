@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "199753664383",
-    "project_id": "my-first-firestore-proj",
-    "storage_bucket": "my-first-firestore-proj.appspot.com"
+    "project_number": "527720172803",
+    "project_id": "notespace-alpha-app2022",
+    "storage_bucket": "notespace-alpha-app2022.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:199753664383:android:847d3fe1900603ddd0fc4a",
+        "mobilesdk_app_id": "1:527720172803:android:e33b4001f50fbc8d6fed36",
         "android_client_info": {
           "package_name": "com.example.flut_fire_training"
         }
       },
       "oauth_client": [
         {
-          "client_id": "199753664383-s131736s5du7uh8epqf5jcua3cjdo7ae.apps.googleusercontent.com",
+          "client_id": "527720172803-re0rfihrioolao54h1e00a5bd4a63ktk.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAB4ht9XpU7QCyc9c5k8pAquEdR9ZBqr1k"
+          "current_key": "AIzaSyDY1cen6PWETm7Z1tk2IGnDHfKQpu25Zbs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "199753664383-s131736s5du7uh8epqf5jcua3cjdo7ae.apps.googleusercontent.com",
+              "client_id": "527720172803-re0rfihrioolao54h1e00a5bd4a63ktk.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "199753664383-7499qa1a3ipjgkk0cn982au3tq8fj5a2.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.flutFireTraining"
-              }
             }
           ]
         }

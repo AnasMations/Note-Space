@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,30 +49,21 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBqUcKq9xgGMbLG9-N_vPXLfAX_-dQLEV0',
-    appId: '1:199753664383:web:4c262767fc4affd6d0fc4a',
-    messagingSenderId: '199753664383',
-    projectId: 'my-first-firestore-proj',
-    authDomain: 'my-first-firestore-proj.firebaseapp.com',
-    storageBucket: 'my-first-firestore-proj.appspot.com',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAB4ht9XpU7QCyc9c5k8pAquEdR9ZBqr1k',
-    appId: '1:199753664383:android:847d3fe1900603ddd0fc4a',
-    messagingSenderId: '199753664383',
-    projectId: 'my-first-firestore-proj',
-    storageBucket: 'my-first-firestore-proj.appspot.com',
+    apiKey: 'AIzaSyDY1cen6PWETm7Z1tk2IGnDHfKQpu25Zbs',
+    appId: '1:527720172803:android:e33b4001f50fbc8d6fed36',
+    messagingSenderId: '527720172803',
+    projectId: 'notespace-alpha-app2022',
+    storageBucket: 'notespace-alpha-app2022.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBT3IKiuMn8YvY0W5b5fe2dkqbPyw2znfE',
-    appId: '1:199753664383:ios:e83da97d5a027757d0fc4a',
-    messagingSenderId: '199753664383',
-    projectId: 'my-first-firestore-proj',
-    storageBucket: 'my-first-firestore-proj.appspot.com',
-    iosClientId: '199753664383-7499qa1a3ipjgkk0cn982au3tq8fj5a2.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAHdcYSXYBt5b8UxcJCFnk8WlMAvBYyMWw',
+    appId: '1:527720172803:ios:bb2945d889980eb76fed36',
+    messagingSenderId: '527720172803',
+    projectId: 'notespace-alpha-app2022',
+    storageBucket: 'notespace-alpha-app2022.appspot.com',
+    iosClientId: '527720172803-0ui9hc9nb2sibsvjqmck5pipj6teglbi.apps.googleusercontent.com',
     iosBundleId: 'com.example.flutFireTraining',
   );
 }
