@@ -3,6 +3,7 @@ import 'package:flut_fire_training/services/firebase-services.dart';
 import 'package:flut_fire_training/style/custom_style.dart';
 import 'package:flutter/material.dart';
 
+// i worked on this part
 class SignInScreenManual extends StatelessWidget {
   const SignInScreenManual({
     Key? key,
@@ -60,11 +61,12 @@ class CustomSignInScreen extends StatelessWidget {
               );
             }),
           ),
-          //sign in action
+          //action of signing in
           AuthStateChangeAction<SignedIn>(
+            //authentication
             //when a user signs up for the first time , he is authenticated in firebase auth , but he still doesn't exist in our cloud firestore database
             //the user only exists in firebase cloudfirestore if he signs up then finishes updating his profile information
-            //if user is authenticated but doesn't exist in firestore database then he hasn't finished setting up his profile
+            //if user is authenticated but doesn't exist in  database then he hasn't finished setting up his profile
             //so we will always push these kinds of users to update profile screen
             ((context, state) async {
               if (await FirestoreServices.fetchUser(state.user!.uid) == null) {
@@ -75,10 +77,9 @@ class CustomSignInScreen extends StatelessWidget {
                   ),
                 );
               } else {
-                //else if user is authenticated and he does exist in firestore database, then go to home screen normally
+                //else if user is authenticated and he does exist in  database, then go to home screen normally
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    //put home page here
                     builder: ((context) => Scaffold()),
                   ),
                 );
@@ -91,6 +92,7 @@ class CustomSignInScreen extends StatelessWidget {
   }
 }
 
+//widgets
 class SignInScreenTitle extends StatelessWidget {
   const SignInScreenTitle({
     Key? key,
