@@ -21,6 +21,7 @@ class UpdateProfile extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Center(
+                //Text = update profile
                 child: Text(
               'Update profile',
               style: TextStyle(
@@ -78,7 +79,7 @@ class _UpdateUserInfoFormState extends State<UpdateUserInfoForm> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                //user profile pic , wrapping it with row prevent it from stretching
+                //user profile pic , wrapping it with row prevent it from stretching across the screen
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -91,7 +92,7 @@ class _UpdateUserInfoFormState extends State<UpdateUserInfoForm> {
                         ))
                   ],
                 ),
-                //name
+                //name field
                 TextFormField(
                   initialValue: userName,
                   decoration: InputDecoration(
@@ -106,12 +107,13 @@ class _UpdateUserInfoFormState extends State<UpdateUserInfoForm> {
                     return null;
                   },
                 ),
-                //university
+                //University
                 TextFormField(
                   initialValue: university,
                   decoration: const InputDecoration(label: Text('University')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
+                      //if empty warning massege
                       return 'Please enter your University';
                     } else {
                       university = value;
@@ -133,6 +135,7 @@ class _UpdateUserInfoFormState extends State<UpdateUserInfoForm> {
                   },
                 ),
                 ElevatedButton(
+                    //button pressd fucnction
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         ScaffoldMessenger.of(context).showSnackBar(
